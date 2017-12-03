@@ -16,7 +16,9 @@ define([
                font: '64px "Roboto Condensed"'
             });
 
-            SoundSamples.register('typewriter', 'audio/typewriter-1.mp3');
+            SoundSamples.register('typewriter', 'audio/typewriter-1.mp3', false, 0.3);
+
+            Juicy.Sound.load('red_eyes', 'audio/red_eyes.mp3', true, 1, 0.2);
         },
         startGame: function() {
             this.game.setState(new TitleState());

@@ -20,6 +20,8 @@ define([
             config.text = config.text.replace(/\|/g, '');
          }
 
+         this.speed = config.speed || this.speed;
+
          Juicy.Components.Text.prototype.set.call(this, config);
       },
       reset: function() {

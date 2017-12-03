@@ -1,56 +1,56 @@
 define([
+   'state/extended',
    'state/game',
    'state/help',
 ], function(
+   State,
    GameState,
    HelpState
 ) {
-   return Juicy.State.extend({
+   return State.extend({
       init: function() {
          // Initialize state
-         this.background = new Juicy.Entity(this, ['Image']);
-         this.background.setImage('img/title.png');
+         var background = new Juicy.Entity(this, ['Image']);
+         background.setImage('img/title.png');
+         this.add(background);
          
-         this.title = new Juicy.Entity(this, ['Text']);
-         this.title.position = new Juicy.Point(50, 100);
-         this.title.getComponent('Text').set({
+         var title = new Juicy.Entity(this, ['Text']);
+         title.position = new Juicy.Point(50, 100);
+         title.getComponent('Text').set({
             font: '80px "Roboto Condensed"',
             text: 'ONE NIGHT',
             fillStyle: '#fff'
          });
+         this.add(title);
 
-         function menuItem(i, text) {
-            var menuItem = new Juicy.Entity(this, ['Text']);
-            menuItem.position = new Juicy.Point(150, 300 + 100 * i);
-            menuItem.getComponent('Text').set({
-               font: '64px "Roboto Condensed"',
-               text: text.toUpperCase(),
-               fillStyle: '#fff'
-            });
-
-            var glassImage = new Juicy.Entity(this, ['Image']);
-            glassImage.setImage('img/glass_right.png');
-            glassImage.position = new Juicy.Point(-50, 5);
-            //menuItem.addChild(glassImage);
-
-            return menuItem;
-         }
-
-         this.menu = [
-            menuItem(0, 'Play'),
-            menuItem(1, 'Help')
-         ];
+         this.nMenuItems = 0;
+         this.menuItem(0, 'Play');
+         this.menuItem(1, 'Help');
 
          this.cursor = new Juicy.Entity(this, ['Image']);
          this.cursor.setImage('img/glasses.png');
          this.cursor.position.x = 70;
          this.setSelected(0);
+         this.add(this.cursor);
       },
-      // mousemove: function(pos) {
-      //    console.log(pos);
-      // },
-      update: function() {
+      menuItem: function(i, text) {
+         var menuItem = new Juicy.Entity(this, ['Text']);
+         menuItem.position = new Juicy.Point(150, 300 + 100 * i);
+         menuItem.getComponent('Text').set({
+            font: '64px "Roboto Condensed"',
+            text: text.toUpperCase(),
+            fillStyle: '#fff'
+         });
 
+         var glassImage = new Juicy.Entity(this, ['Image']);
+         glassImage.setImage('img/glass_right.png');
+         glassImage.position = new Juicy.Point(-50, 5);
+
+         this.nMenuItems ++;
+         this.add(menuItem);
+      },
+      update: function() {
+         State.prototype.update.apply(this, arguments);
       },
       key_ENTER: function() {
          switch(this.selected) {
@@ -64,8 +64,8 @@ define([
          }
       },
       setSelected: function(i) {
-         if (i < 0) i += this.menu.length;
-         this.selected = i % this.menu.length;
+         if (i < 0) i += this.nMenuItems;
+         this.selected = i % this.nMenuItems;
 
          this.cursor.position.y = 305 + 100 * this.selected;
       },
@@ -74,19 +74,6 @@ define([
       },
       key_DOWN: function() {
          this.setSelected(this.selected + 1);
-      },
-      render: function(context) {
-         context.fillStyle = '#000';
-         context.clearRect(0, 0, this.game.width, this.game.height);
-
-         this.background.render(context);
-         this.title.render(context);
-
-         this.menu.forEach(function(item) {
-            item.render(context);
-         });
-
-         this.cursor.render(context);
       }
    });
 });

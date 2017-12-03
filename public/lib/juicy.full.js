@@ -209,6 +209,11 @@
       return this; // Enable chaining
    };
 
+   var Game_delays = [];
+   Game.delay = function(time, callback) {
+      Game_delays.push({ time: time, callback: callback });
+   };
+
    var Game_clear = function() {
       for (var action in listener) {
          document.removeEventListener(action, listener[action]);
@@ -309,6 +314,14 @@
       }
 
       try {
+         Game_delays.forEach(function(delay) {
+            delay.time -= dt;
+            if (delay.time <= 0) {
+               delay.callback.call(Game_state);
+            }
+         });
+         Game_delays = Game_delays.filter(function(delay) { return delay.time > 0; })
+
          var updated = !Game_state.update(dt, Game) || Game_state.updated;
          Game_state.updated = false;
          
